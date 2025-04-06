@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Cryptic Writings",
+    "description": "Disco de Megadeth",
+    "code": "MEG004",
+    "price": 39.99,
+    "status": true,
+    "stock": 22,
+    "category": "Metal",
+    "thumbnails": [
+      "./images/crypticweitings.jpg",
+      "./images/megadeth2.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Dookie",
+    "description": "Disco de Green Day",
+    "code": "GD003",
+    "price": 39.99,
+    "status": true,
+    "stock": 20,
+    "category": "MPunkPop",
+    "thumbnails": [
+      "./images/dookie.jpg",
+      "./images/greenday.jpg"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Smash",
+    "description": "Disco de The Offspring",
+    "code": "OF002",
+    "price": 29.99,
+    "status": true,
+    "stock": 20,
+    "category": "PunkPop/Alternative",
+    "thumbnails": [
+      "./images/smash.jpg",
+      "./images/offspring.jpg"
+    ]
+  }
+]
