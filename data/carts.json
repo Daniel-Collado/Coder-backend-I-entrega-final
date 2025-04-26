@@ -5,6 +5,27 @@
       {
         "product": "1",
         "quantity": 3
+      },
+      {
+        "product": "3",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "products": []
+  },
+  {
+    "id": 3,
+    "products": [
+      {
+        "id": 2,
+        "quantity": 4
+      },
+      {
+        "id": 3,
+        "quantity": 1
       }
     ]
   }

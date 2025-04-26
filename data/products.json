@@ -40,5 +40,16 @@
       "./images/smash.jpg",
       "./images/offspring.jpg"
     ]
+  },
+  {
+    "id": 4,
+    "title": "Un día perfecto",
+    "description": "Disco de Attaque 77",
+    "code": "A77-04",
+    "price": 32,
+    "status": true,
+    "stock": 2,
+    "category": "Punkrock",
+    "thumbnails": []
   }
 ]
