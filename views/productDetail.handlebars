@@ -1,0 +1,36 @@
+<h1>{{product.title}}</h1>
+<p>{{product.description}}</p>
+<p>Precio: ${{product.price}}</p>
+<p>Stock: {{product.stock}}</p>
+<p>Categoría: {{product.category}}</p>
+{{#if product.thumbnails.length}}
+    <h3>Imágenes:</h3>
+    <ul>
+        {{#each product.thumbnails}}
+        <li><img src="{{this}}" alt="{{../product.title}}" width="100"></li>
+        {{/each}}
+    </ul>
+    {{/if}}
+    <button onclick="addToCart('{{product._id}}')">Agregar al Carrito</button>
+    <a href="/products">Volver</a>
+
+<script>
+    async function getOrCreateCart() {
+        let cartId = localStorage.getItem('cartId');
+        if (!cartId) {
+            const response = await fetch('/api/carts', { method: 'POST' });
+            const result = await response.json();
+            cartId = result.carrito._id;
+            localStorage.setItem('cartId', cartId);
+        }
+        return cartId;
+    }
+
+    async function addToCart(productId) {
+        const cartId = await getOrCreateCart();
+        const response = await fetch(`/api/carts/${cartId}/product/${productId}`, { method: 'POST' });
+        const result = await response.json();
+        alert(result.mensaje);
+        window.location.href = `/carts/${cartId}`; // Redirige al carrito
+    }
+</script>

@@ -1,1 +1,65 @@
-<h1>Ejemplo de prueba</h1>
+<h1>Lista de Productos</h1>
+
+<!-- Formulario de filtros -->
+<form id="filterForm" method="GET" action="/products">
+    <label for="limit">Límite:</label>
+    <input type="number" id="limit" name="limit" value="{{limit}}" min="1">
+
+    <label for="page">Página:</label>
+    <input type="number" id="page" name="page" value="{{currentPage}}" min="1">
+
+    <label for="sort">Ordenar por precio:</label>
+    <select id="sort" name="sort">
+        <option value="">Sin ordenar</option>
+        <option value="asc" {{#if (eq sort 'asc')}}selected{{/if}}>Ascendente</option>
+        <option value="desc" {{#if (eq sort 'desc')}}selected{{/if}}>Descendente</option>
+    </select>
+
+    <label for="category">Categoría:</label>
+    <input type="text" id="category" name="query" value="{{query}}" placeholder='{"category": "Punkrock"}'>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<!-- Lista de productos -->
+<ul>
+    {{#each payload}}
+        <li>
+        <strong>{{this.title}}</strong> - {{this.description}} - ${{this.price}} (Stock: {{this.stock}})
+        <a href="/products/{{this._id}}">Ver Detalles</a>
+        <button onclick="addToCart('{{this._id}}')">Agregar al Carrito</button>
+        </li>
+    {{/each}}
+</ul>
+
+<!-- Paginación -->
+<div>
+    <p>Página {{currentPage}} de {{totalPages}}</p>
+    {{#if hasPrevPage}}
+        <a href="{{prevLink}}">Página Anterior</a>
+    {{/if}}
+    {{#if hasNextPage}}
+        <a href="{{nextLink}}">Página Siguiente</a>
+    {{/if}}
+</div>
+
+<script>
+    async function getOrCreateCart() {
+        let cartId = localStorage.getItem('cartId');
+        if (!cartId) {
+        const response = await fetch('/api/carts', { method: 'POST' });
+        const result = await response.json();
+        cartId = result.carrito._id;
+        localStorage.setItem('cartId', cartId);
+        }
+        return cartId;
+    }
+
+    async function addToCart(productId) {
+        const cartId = await getOrCreateCart();
+        const response = await fetch(`/api/carts/${cartId}/product/${productId}`, { method: 'POST' });
+        const result = await response.json();
+        alert(result.mensaje);
+        window.location.href = `/carts/${cartId}`;
+    }
+</script>

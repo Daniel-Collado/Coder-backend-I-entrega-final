@@ -1,6 +1,6 @@
 <h1>Productos en Tiempo Real</h1>
 
-<!-- Formulario para agregar un producto -->
+<!-- Formulario agregar-->
 <h2>Agregar Producto</h2>
 <form id="formAgregarProducto">
     <input type="text" id="title" placeholder="Título" required><br>
@@ -8,14 +8,15 @@
     <input type="text" id="code" placeholder="Código" required><br>
     <input type="number" id="price" placeholder="Precio" required><br>
     <input type="number" id="stock" placeholder="Stock" required><br>
-    <input type="text" id="category" placeholder="Categoría" required><br>
+    <input type="text" id="category" placeholder="Categorías (separadas por comas)" required><br>
+    <input type="text" id="thumbnails" placeholder="Imágenes (separadas por comas, opcional)"><br>
     <button type="submit">Agregar Producto</button>
 </form>
 
-<!-- Formulario para eliminar un producto -->
+<!-- Formulario eliminar -->
 <h2>Eliminar Producto</h2>
 <form id="formEliminarProducto">
-    <input type="number" id="pid" placeholder="ID del Producto" required><br>
+    <input type="text" id="pid" placeholder="ID del Producto" required><br>
     <button type="submit">Eliminar Producto</button>
 </form>
 
@@ -23,55 +24,88 @@
 <h2>Lista de Productos</h2>
 <ul id="listaProductos">
     {{#each productos}}
-        <li data-id="{{this.id}}">
-            <strong>{{this.title}}</strong> - {{this.description}} - ${{this.price}} (Stock: {{this.stock}})
+        <li data-id="{{this._id}}">
+            <strong>{{this.title}}</strong> - {{this.description}} - ${{this.price}} (Stock: {{this.stock}}) - Categorías: {{join this.category ", "}}
         </li>
     {{/each}}
 </ul>
 
-<!-- Incluir el cliente de Socket.IO -->
+<!-- Cliente de Socket.IO -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
 
     // Escuchar evento de actualización de productos
-    socket.on('actualizarProductos', (productos) => {
+    socket.on('productoAgregado', (producto) => {
         const lista = document.getElementById('listaProductos');
-        lista.innerHTML = '';
-        productos.forEach(producto => {
-            const li = document.createElement('li');
-            li.setAttribute('data-id', producto.id);
-            li.innerHTML = `<strong>${producto.title}</strong> - ${producto.description} - $${producto.price} (Stock: ${producto.stock})`;
-            lista.appendChild(li);
-        });
+        const li = document.createElement('li');
+        li.setAttribute('data-id', producto._id);
+        li.innerHTML = `<strong>${producto.title}</strong> - ${producto.description} - $${producto.price} (Stock: ${producto.stock}) - Categorías: ${producto.category.join(", ")}`;
+        lista.appendChild(li);
     });
 
     // Manejar el formulario para agregar producto
-    document.getElementById('formAgregarProducto').addEventListener('submit', (e) => {
+    document.getElementById('formAgregarProducto').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const producto = {
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            code: document.getElementById('code').value,
-            price: parseFloat(document.getElementById('price').value),
-            stock: parseInt(document.getElementById('stock').value),
-            category: document.getElementById('category').value
-        };
-        fetch('/api/products', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(producto)
-        }).then(() => {
-            document.getElementById('formAgregarProducto').reset();
-        });
+        
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const code = document.getElementById('code').value;
+        const price = parseFloat(document.getElementById('price').value);
+        const stock = parseInt(document.getElementById('stock').value);
+        const categoryInput = document.getElementById('category').value;
+        const thumbnailsInput = document.getElementById('thumbnails').value;
+
+        // Convertir las categorías de una cadena separada por comas a un arreglo
+        const category = categoryInput.split(',').map(cat => cat.trim()).filter(cat => cat !== '');
+        // Convertir las imágenes de una cadena separada por comas a un arreglo
+        const thumbnails = thumbnailsInput ? thumbnailsInput.split(',').map(url => url.trim()).filter(url => url !== '') : [];
+
+        const producto = { title, description, code, price, stock, category, thumbnails };
+
+        try {
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(producto)
+            });
+            const result = await response.json();
+
+            // Logs depuración
+            console.log('Código de estado HTTP:', response.status);
+            console.log('Respuesta del servidor:', result);
+
+            if (response.status === 201 && result.status === 'success') {
+                document.getElementById('formAgregarProducto').reset();
+                alert('Producto agregado con éxito');
+            } else {
+                alert('Error al agregar producto: ' + result.mensaje);
+            }
+        } catch (error) {
+            alert('Error al agregar producto: ' + error.message);
+        }
     });
 
     // Manejar el formulario para eliminar producto
-    document.getElementById('formEliminarProducto').addEventListener('submit', (e) => {
+    document.getElementById('formEliminarProducto').addEventListener('submit', async (e) => {
         e.preventDefault();
         const pid = document.getElementById('pid').value;
-        fetch(`/api/products/${pid}`, { method: 'DELETE' }).then(() => {
-            document.getElementById('formEliminarProducto').reset();
-        });
+        try {
+            const response = await fetch(`/api/products/${pid}`, {
+                method: 'DELETE'
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const li = document.querySelector(`li[data-id="${pid}"]`);
+                if (li) li.remove();
+                document.getElementById('formEliminarProducto').reset();
+                alert('Producto eliminado con éxito');
+            } else {
+                alert('Error al eliminar producto: ' + result.mensaje);
+            }
+        } catch (error) {
+            alert('Error al eliminar producto: ' + error.message);
+        }
     });
 </script>

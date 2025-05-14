@@ -1,19 +1,5 @@
 [
   {
-    "id": 1,
-    "title": "Cryptic Writings",
-    "description": "Disco de Megadeth",
-    "code": "MEG004",
-    "price": 39.99,
-    "status": true,
-    "stock": 22,
-    "category": "Metal",
-    "thumbnails": [
-      "./images/crypticweitings.jpg",
-      "./images/megadeth2.jpg"
-    ]
-  },
-  {
     "id": 2,
     "title": "Dookie",
     "description": "Disco de Green Day",
@@ -47,6 +33,17 @@
     "description": "Disco de Attaque 77",
     "code": "A77-04",
     "price": 32,
+    "status": true,
+    "stock": 2,
+    "category": "Punkrock",
+    "thumbnails": []
+  },
+  {
+    "id": 5,
+    "title": "Valentin Alsina",
+    "description": "Disco de 2 minutos",
+    "code": "2M003",
+    "price": 39,
     "status": true,
     "stock": 2,
     "category": "Punkrock",
